@@ -1,5 +1,6 @@
 import webbrowser
 import speech_recognition as sr
+import pyttsx3
 
 SITES = {
     "youtube": "https://www.youtube.com",
@@ -11,6 +12,15 @@ SITES = {
     "linkedin": "https://www.linkedin.com",
     "chatgpt": "https://chatgpt.com",
 }
+
+engine = pyttsx3.init()
+engine.setProperty("rate", 175)
+engine.setProperty("volume", 1.0)
+
+
+def speak(message: str) -> None:
+    engine.say(message)
+    engine.runAndWait()
 
 
 def handle(command: str) -> str:
@@ -40,23 +50,32 @@ def listen() -> str:
         return command.lower().strip()
 
     except sr.UnknownValueError:
-        print("NOVA: I couldn't understand that.")
-        return ""
+        return "unrecognized"
 
     except sr.RequestError:
-        print("NOVA: Speech recognition service is unavailable.")
-        return ""
+        return "service_error"
 
+
+speak("Hello! I am Nova. How can I help you?")
 
 while True:
     text = listen()
 
     if text in ("quit", "exit", "stop"):
+        speak("Goodbye!")
         print("NOVA: Goodbye!")
         break
 
-    if text:
-        print("NOVA:", handle(text))
+    elif text == "unrecognized":
+        speak("Sorry, I didn't understand that.")
+
+    elif text == "service_error":
+        speak("Speech recognition service is unavailable.")
+
+    elif text:
+        response = handle(text)
+        print("NOVA:", response)
+        speak(response)
 
 
 
