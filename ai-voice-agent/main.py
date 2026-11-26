@@ -13,29 +13,34 @@ SITES = {
     "chatgpt": "https://chatgpt.com",
 }
 
+# Text-to-speech setup
 engine = pyttsx3.init()
 engine.setProperty("rate", 175)
 engine.setProperty("volume", 1.0)
 
 
+# Nova speaks
 def speak(message: str) -> None:
     engine.say(message)
     engine.runAndWait()
 
 
+# Handle commands
 def handle(command: str) -> str:
-    if command.startswith("open "):
-        name = command.removeprefix("open ").strip()
+    command = command.lower().strip()
 
-        if name in SITES:
-            webbrowser.open(SITES[name])
-            return f"Opening {name}"
+    if "open" in command:
+        for name, url in SITES.items():
+            if name in command:
+                webbrowser.open(url)
+                return f"Opening {name}"
 
-        return f"I don't know {name} yet"
+        return "I don't know that website yet"
 
     return "Sorry, I can't do that yet"
 
 
+# Listen to voice
 def listen() -> str:
     recognizer = sr.Recognizer()
 
@@ -56,6 +61,7 @@ def listen() -> str:
         return "service_error"
 
 
+# Main program
 speak("Hello! I am Nova. How can I help you?")
 
 while True:
@@ -76,12 +82,3 @@ while True:
         response = handle(text)
         print("NOVA:", response)
         speak(response)
-
-
-
-
-
-
-
-
-
